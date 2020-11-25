@@ -32,7 +32,67 @@ export const format = (() => {
     }
   };
 
-  format.number = (number, options = {}) => {
+  format.setup = (() => {
+
+    const setup = {};
+
+    const defaults = {
+      number: {
+        integerDigits:             null,
+        thousandsSeparator:        '',
+        decimalSeparator:          '.',
+        decimalDigits:             null,
+        decimalThousandsSeparator: '',
+        round:                     false,
+        prefix:                    '',
+        suffix:                    ''
+      },
+      date: {
+        pattern: null,
+        fields:  {},
+        prefix:  '',
+        suffix:  ''
+      },
+      text: {
+        trim:             false,
+        clearExtraSpaces: false,
+        toUpperCase:      false,
+        toLowerCase:      false,
+        capitalize:       false,
+        capitalizeWords:  false,
+        truncateSize:     null,
+        truncateSuffix:   ' ...',
+        truncateWords:    false,
+        prefix:           '',
+        suffix:           ''
+      }
+    };
+
+    setup.defaultNumber = function defaultNumber(options = null) {
+      if (options) {
+        Object.assign(defaults.number, options);
+      }
+      return {... defaults.number};
+    };
+
+    setup.defaultDate = function defaultDate(options = null) {
+      if (options) {
+        Object.assign(defaults.date, options);
+      }
+      return {... defaults.date};
+    };
+
+    setup.defaultText = function defaultText(options = null) {
+      if (options) {
+        Object.assign(defaults.text, options);
+      }
+      return {... defaults.text};
+    };
+
+    return setup;
+  })();
+
+  format.number = function formatNumber(number, options = {}) {
     const parse = (number) => {
       let parsed = (/^([+-\s]*)(\d*)(\.(\d*))?/).exec(number);
       if (!parsed) {
@@ -77,7 +137,7 @@ export const format = (() => {
       round                     = false,
       prefix                    = '',
       suffix                    = ''
-    } = (options || {});
+    } = Object.assign(format.setup.defaultNumber(), options);
 
     if (round) {
       if ((typeof decimalDigits !== 'number') || (decimalDigits < 0)) {
@@ -119,7 +179,7 @@ export const format = (() => {
     );
   };
 
-  format.date = (date, options = {}) => {
+  format.date = function formatDate(date, options = {}) {
     if (!(date instanceof Date)) {
       switch (typeof date) {
         case 'number':
@@ -137,7 +197,7 @@ export const format = (() => {
       fields   = {},
       prefix  = '',
       suffix  = ''
-    } = (options || {});
+    } = Object.assign(format.setup.defaultDate(), options);
     if (!pattern) {
       if (typeof options !== 'string') {
         return null;
@@ -193,7 +253,7 @@ export const format = (() => {
     return (prefix + pattern.replace(regexp, callback) + suffix);
   };
 
-  format.text = (text, options = {}) => {
+  format.text = function formatText(text, options = {}) {
     if (typeof text !== 'string') {
       text = String(text);
     }
@@ -209,7 +269,7 @@ export const format = (() => {
       truncateWords    = false,
       prefix           = '',
       suffix           = ''
-    } = (options || {});
+    } = Object.assign(format.setup.defaultText(), options);
 
     if (clearExtraSpaces) {
       text = text.trim().replace(/\s+/g, ' ');
@@ -254,7 +314,7 @@ export const format = (() => {
     }
     return (prefix + text + suffix);
   };
-  format.text.adjustName = (name, lowerCases = []) => {
+  format.text.adjustName = function adjustName(name, lowerCases = []) {
     if (typeof name !== 'string') {
       name = String(name);  
     }
@@ -268,11 +328,16 @@ export const format = (() => {
   };
 
 
-  // Keep in mind that registering prototypes to native Javascript types
-  // is not a recommended pratice, since the code can go into unexpected
-  // behavior in the future if the standards change. But it might not be
-  // an issue to small projects though.
-  format.prototype = () => {
+  /* It will register a format function for the objects of each respective
+   * Javascript type (Number, Date and String), making it possible to
+   * write a cleaner and more readable code.
+   * 
+   * However, keep in mind that using non-native prototype functions is not
+   * a recommended pratice, since the code can go into unexpected behavior
+   * in the future if the standards change. But it might not be an issue to 
+   * mantain small projects though.
+   */
+  format.prototype = function prototype() {
     Number.prototype.format = function(options) {
       return format.number(this, options);
     };
