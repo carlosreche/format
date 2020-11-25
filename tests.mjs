@@ -3,9 +3,9 @@ import format from './format.mjs';
 
 
 console.log(format.number(1000.5, {
-    thousandsSeparator: '.',
-    decimalSeparator: ',',
-    decimalDigits: 2
+    decimalDigits:      2,
+    decimalSeparator:   ',',
+    thousandsSeparator: '.'
   }
 ));
 
@@ -20,7 +20,8 @@ console.log(format.date(new Date('2020-09-05 16:15:00'), {
 ));
 
 
-console.log(format.text('   the QUICK browN      fox jumps over the lazy dog', {
+let messedUpText = '   the QUICK browN fox jumps     OVER the lazy dog';
+console.log(format.text(messedUpText, {
     clearExtraSpaces: true,
     toLowerCase:      true,
     capitalizeWords:  true,
