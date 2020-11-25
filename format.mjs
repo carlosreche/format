@@ -22,7 +22,7 @@
  * @url https://github.com/carlosreche/format
  * @author Carlos Henrique Reche
  */
-const format = (() => {
+export const format = (() => {
 
   const format = (value, options = {}) => {
     if (value instanceof Date) {
@@ -267,5 +267,24 @@ const format = (() => {
     return name.replace(new RegExp(pattern, 'g'), callback);
   };
 
+
+  // Keep in mind that registering prototypes to native Javascript types
+  // is not a recommended pratice, since the code can go into unexpected
+  // behavior in the future if the standards change. But it might not be
+  // an issue to small projects though.
+  format.prototype = () => {
+    Number.prototype.format = function(options) {
+      return format.number(this, options);
+    };
+    Date.prototype.format = function(options) {
+      return format.date(this, options);
+    };
+    String.prototype.format = function(options) {
+      return format.text(this, options);
+    };
+  };
+
   return format;
 })();
+
+export default format;
