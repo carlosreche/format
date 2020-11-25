@@ -1,6 +1,6 @@
 # format
 
-A simple and nifty Javascript object to format numbers, dates and text strings.
+A simple, nifty and full-featured Javascript formatter of numbers, dates and text strings.
 
 ## Quick View
 
@@ -44,10 +44,11 @@ console.log(format.text(messedUpText, {
 // (final length = 34)
 ```
 
+---
 
 ## Library Reference
 
-### format.number ( value, options )
+### format.number&nbsp;_(&nbsp;value,&nbsp;options&nbsp;)_
 
 #### **_value_** : Number | String
 
@@ -69,7 +70,7 @@ Should be an object having any of the properties below:
 | suffix | Appends a value at the end of the formatted number. | String |  "&nbsp;" <br>_(empty string)_ |
 
 
-### format.date ( value, options )
+### format.date&nbsp;_(&nbsp;value,&nbsp;options&nbsp;)_
 
 #### **_value_** : Date | Number | String
 
@@ -106,11 +107,13 @@ The following specifiers can be used in the _pattern_ property:
 | z | Timezone offset | +03:00 |
 | {&nbsp;_customField_&nbsp;} |  |  |
 
-The specifiers in the _pattern_ can be escaped using a backslash "\\" character. Example:
+The specifiers in the _pattern_ can be escaped using a backslash "\\" character. Just remember to escape the backslash with another backslash first. Example:
 
-    format.date('\\mont\\h: mm'); // results "month: 09"
+```js
+format.date('\\mont\\h: mm'); // results "month: 09" (for a date in September)
+```
 
-### format.text ( value, options )
+### format.text&nbsp;_(&nbsp;value,&nbsp;options&nbsp;)_
 
 #### **_value_** : any
 
