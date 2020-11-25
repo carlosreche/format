@@ -59,11 +59,11 @@ Parameter _options_ should be an object having any of the properties below:
 | Property | Expected Type | Default Value | How it Works |
 |----------|:-------------:|:-------------:|--------------|
 | integerDigits | Number | Null | Grants the integer part of the number has at least as many digits as specified here, by appending leading zeros to it, if it's necessary. |
-| thousandsSeparator | String | "" <br>_(empty string)_ | The character delimiting each thousand multiple of the integer part (for instance, the commas in _1,000,000_&nbsp;). |
+| decimalDigits | Number | Null | Grants the decimal part of the number has exactly the quantity of digits specified here, by adding right zeros to it or by cropping the excess.<br>Notice that if the property _**round**_ is _true_, the number will firstly be rounded to the last decimal digit (specified here) before cropping. |
 | decimalSeparator | String | "." <br>_(dot)_ | The character separating the integer part from the decimal one. |
-| decimalDigits | Number | Null | Grants the decimal part of the number has exactly the quantity of digits specified here, by adding right zeros to it or by cropping the excess.<br>Notice that if the property _round_ is _true_, the number will firstly be rounded to the last decimal digit (specified here) before cropping. |
+| thousandsSeparator | String | "" <br>_(empty string)_ | The character delimiting each thousand multiple of the integer part (for instance, the commas in _1,000,000_&nbsp;). |
 | decimalThousandsSeparator | String | "" <br>_(empty string)_ | The character delimiting each thousand multiple of the decimal part (for instance, the spaces in _0.000&nbsp;100&nbsp;250_&nbsp;, making it easier to read _100 micro_ and _250 nano_). |
-| round | Boolean | false | Sets whether the number should be rounded or not. When rounding, it will observe the value set in _**decimalDigits**_ (for instance, if _decimalDigits_ equals _2_, rounding the number _0.7899_ will result in _0.79_&nbsp;, not _1_ as someone could imagine). |
+| round | Boolean | false | Sets whether the number should be rounded or not. When rounding, the value set in _**decimalDigits**_ will be observed  (for instance, if _decimalDigits_ equals _2_, rounding the number _0.7899_ will result in _0.79_&nbsp;, not _1_ as someone could imagine). |
 | prefix | String | "" <br>_(empty string)_ | Appends a value at the beggining of the formatted number. |
 | suffix | String | "" <br>_(empty string)_ | Appends a value at the end of the formatted number. |
 
