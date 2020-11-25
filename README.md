@@ -8,9 +8,9 @@ A simple and nifty Javascript object to format numbers, dates and text strings.
 
 ```js
 console.log(format.number(1000.5, {
-    thousandsSeparator: '.',
-    decimalSeparator: ',',
-    decimalDigits: 2
+    decimalDigits:      2,
+    decimalSeparator:   ',',
+    thousandsSeparator: '.'
   }
 ));
 // output: "1.000,50"
@@ -19,20 +19,20 @@ console.log(format.number(1000.5, {
 ### Formatting Dates
 ```js
 console.log(format.date(new Date('2020-09-05 16:15:00'), {
-    pattern: '{abbrMonth} dd, yyyy - hh:ii',
+    pattern: '{abbrMonth} dd, yyyy',
     fields: {
       abbrMonth: date => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul',
                           'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][date.getMonth()]
     }
   }
 ));
-// output: "Sep 05, 2020 - 16:15"
+// output: "Sep 05, 2020"
 ```
 
 ### Formatting Texts
 ```js
-// messed up text
-console.log(format.text('   the QUICK browN      fox jumps over the lazy dog', {
+let messedUpText = '   the QUICK browN fox jumps     OVER the lazy dog';
+console.log(format.text(messedUpText, {
     clearExtraSpaces: true,
     toLowerCase:      true,
     capitalizeWords:  true,
@@ -40,19 +40,20 @@ console.log(format.text('   the QUICK browN      fox jumps over the lazy dog', {
     truncateSuffix:   ' ...'
   }
 ));
-// output: "The Quick Brown Fox Jumps Over ..." (length = 34)
+// output: "The Quick Brown Fox Jumps Over ..."
+// (final length = 34)
 ```
 
 
-# Library Reference
+## Library Reference
 
-## format.number ( value, options )
+### format.number ( value, options )
 
-### **_value_** : Number | String
+#### **_value_** : Number | String
 
 Can be a number or any valid numeric string.
 
-### **_options_** : Object
+#### **_options_** : Object
 
 Should be an object having any of the properties below:
 
@@ -68,13 +69,13 @@ Should be an object having any of the properties below:
 | suffix | Appends a value at the end of the formatted number. | String |  "&nbsp;" <br>_(empty string)_ |
 
 
-## format.date ( value, options )
+### format.date ( value, options )
 
-### **_value_** : Date | Number | String
+#### **_value_** : Date | Number | String
 
 Can be a Date object, a timestamp (number) or any valid date string (successfully parsed by _Date.parse()_ method).
 
-### **_options_** : Object
+#### **_options_** : Object
 
 Should be an object having any of the properties below:
 
@@ -109,13 +110,13 @@ The specifiers in the _pattern_ can be escaped using a backslash "\\" character.
 
     format.date('\\mont\\h: mm'); // results "month: 09"
 
-## format.text ( value, options )
+### format.text ( value, options )
 
-### **_value_** : any
+#### **_value_** : any
 
 Can be a string or any other type,  in which case it'll be converted invoking the object's _toString()_ method.
 
-### **_options_** : Object
+#### **_options_** : Object
 
 Should be an object having any of the properties below:
 
@@ -133,11 +134,8 @@ Should be an object having any of the properties below:
 | prefix | Appends a value at the beggining of the formatted number. | String | "&nbsp;" <br>_(empty string)_ |
 | suffix | Appends a value at the end of the formatted number. | String |  "&nbsp;" <br>_(empty string)_ |
 
-## format.prototype ( )
+### format.prototype ( )
 
 It will register a _format_ function for the objects of each respective Javascript type (_Number_, _Date_ and _String_), making it possible to write a cleaner and more readable code.
 
-However, keep in mind that using non-native prototype functions is not a recommended pratice, since the code can go into unexpected behavior in the future if the standards change. But it might not be an issue to small projects though.
-
-
-
+However, keep in mind that using non-native prototype functions is not a recommended pratice, since the code can go into unexpected behavior in the future if the standards change. But it might not be an issue to mantain small projects though.
