@@ -152,7 +152,7 @@ export const format = (() => {
       let zeros = totalDigits - String(number).length;
       return ((zeros < 0) ? number : (('0').repeat(zeros) + number));
     }
-    const regexp = /\\.|yy(yy)?|mm?|dd?|hh?|ii?|ss?|u|z|\{[^\}]+\}/g;
+    const regexp = /\\.|yy(yy)?|mm?|dd?|hh?|ii?|ss?|v|z|\{[^\}]+\}/g;
     const callback = (match) => {
       switch (match[0]) {
         case '\\':
@@ -177,7 +177,7 @@ export const format = (() => {
         case 'i':    return date.getMinutes();
         case 'ss':   return leadingZeros(2, date.getSeconds());
         case 's':    return date.getSeconds();
-        case 'u':    return leadingZeros(3, date.getMilliseconds());
+        case 'v':    return leadingZeros(3, date.getMilliseconds());
         case 'z':
           let value    = date.getTimezoneOffset() / 60;
           let absValue = Math.abs(value);
