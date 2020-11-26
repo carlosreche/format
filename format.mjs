@@ -56,8 +56,8 @@ export const format = (() => {
       text: {
         trim:             false,
         clearExtraSpaces: false,
-        toUpperCase:      false,
-        toLowerCase:      false,
+        upperCase:        false,
+        lowerCase:        false,
         capitalize:       false,
         capitalizeWords:  false,
         truncateSize:     null,
