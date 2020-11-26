@@ -32,61 +32,37 @@ export const format = (() => {
     }
   };
 
-  format.setup = (() => {
-
-    const defaults = {
-      number: {
-        integerDigits:             null,
-        thousandsSeparator:        '',
-        decimalSeparator:          '.',
-        decimalDigits:             null,
-        decimalThousandsSeparator: '',
-        round:                     false,
-        prefix:                    '',
-        suffix:                    ''
-      },
-      date: {
-        pattern: null,
-        fields:  {},
-        prefix:  '',
-        suffix:  ''
-      },
-      text: {
-        trim:             false,
-        clearExtraSpaces: false,
-        upperCase:        false,
-        lowerCase:        false,
-        capitalize:       false,
-        capitalizeWords:  false,
-        truncateSize:     null,
-        truncateSuffix:   ' ...',
-        truncateWords:    false,
-        prefix:           '',
-        suffix:           ''
-      }
-    };
-
-    return {
-      defaultNumber: function defaultNumber(options = null) {
-        if (options) {
-          Object.assign(defaults.number, options);
-        }
-        return {... defaults.number};
-      },
-      defaultDate: function defaultDate(options = null) {
-        if (options) {
-          Object.assign(defaults.date, options);
-        }
-        return {... defaults.date};
-      },
-      defaultText: function defaultText(options = null) {
-        if (options) {
-          Object.assign(defaults.text, options);
-        }
-        return {... defaults.text};
-      }
-    };
-  })();
+  const defaults = {
+    number: {
+      integerDigits:             null,
+      thousandsSeparator:        '',
+      decimalSeparator:          '.',
+      decimalDigits:             null,
+      decimalThousandsSeparator: '',
+      round:                     false,
+      prefix:                    '',
+      suffix:                    ''
+    },
+    date: {
+      pattern: null,
+      fields:  {},
+      prefix:  '',
+      suffix:  ''
+    },
+    text: {
+      trim:             false,
+      clearExtraSpaces: false,
+      upperCase:        false,
+      lowerCase:        false,
+      capitalize:       false,
+      capitalizeWords:  false,
+      truncateSize:     null,
+      truncateSuffix:   ' ...',
+      truncateWords:    false,
+      prefix:           '',
+      suffix:           ''
+    }
+  };
 
   format.number = function formatNumber(number, options = {}) {
     const parse = (number) => {
@@ -133,7 +109,7 @@ export const format = (() => {
       round                     = false,
       prefix                    = '',
       suffix                    = ''
-    } = Object.assign(format.setup.defaultNumber(), options);
+    } = {...defaults.number, ...options};
 
     if (round) {
       if ((typeof decimalDigits !== 'number') || (decimalDigits < 0)) {
@@ -193,7 +169,7 @@ export const format = (() => {
       fields   = {},
       prefix  = '',
       suffix  = ''
-    } = Object.assign(format.setup.defaultDate(), options);
+    } = {...defaults.date, ...options};
     if (!pattern) {
       if (typeof options !== 'string') {
         return null;
@@ -265,7 +241,7 @@ export const format = (() => {
       truncateWords    = false,
       prefix           = '',
       suffix           = ''
-    } = Object.assign(format.setup.defaultText(), options);
+    } = {...defaults.text, ...options};
 
     if (clearExtraSpaces) {
       text = text.trim().replace(/\s+/g, ' ');
@@ -324,6 +300,25 @@ export const format = (() => {
   };
 
 
+  format.number.defaultOptions = function defaultNumberOptions(options = null) {
+    if (options) {
+      Object.assign(defaults.number, options);
+    }
+    return {...defaults.number};
+  };
+  format.date.defaultOptions = function defaultDateOptions(options = null) {
+    if (options) {
+      Object.assign(defaults.date, options);
+    }
+    return {...defaults.date};
+  };
+  format.text.defaultOptions = function defaultTextOptions(options = null) {
+    if (options) {
+      Object.assign(defaults.text, options);
+    }
+    return {...defaults.text};
+  };
+
   /* It will register a format function for the objects of each respective
    * Javascript type (Number, Date and String), making it possible to
    * write a cleaner and more readable code.
@@ -334,14 +329,24 @@ export const format = (() => {
    * mantain small projects though.
    */
   format.prototype = function prototype() {
-    Number.prototype.format = function(options) {
+    Number.prototype.format = function(options = null) {
       return format.number(this, options);
     };
-    Date.prototype.format = function(options) {
+    Date.prototype.format = function(options = null) {
       return format.date(this, options);
     };
-    String.prototype.format = function(options) {
+    String.prototype.format = function(options = null) {
       return format.text(this, options);
+    };
+
+    Number.defaultFormatOptions = function(options = null) {
+      format.number.defaultOptions(options);
+    };
+    Date.defaultFormatOptions = function(options = null) {
+      format.date.defaultOptions(options);
+    };
+    String.defaultFormatOptions = function(options = null) {
+      format.text.defaultOptions(options);
     };
   };
 
