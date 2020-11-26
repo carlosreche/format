@@ -82,7 +82,7 @@ Should be an object having any of the properties below:
 
 | Property | Description | Expected Type | Default Value |
 |----------|--------------|:-------------:|:-------------:|
-| pattern | The desired date format written with the specifiers below. | String | null |
+| pattern | The date format written with the specifiers below. | String | null |
 | fields | An object containing callback functions for each custom fields of the _pattern_ property. | Object | {&nbsp;} <br>_(empty object)_ |
 | prefix | Appends a value at the beggining of the formatted number. | String | "&nbsp;" <br>_(empty string)_ |
 | suffix | Appends a value at the end of the formatted number. | String |  "&nbsp;" <br>_(empty string)_ |
@@ -125,20 +125,20 @@ Should be an object having any of the properties below:
 
 | Property | Description | Expected Type | Default Value |
 |----------|--------------|:-------------:|:-------------:|
-| trim |  | Boolean | false |
-| clearExtraSpaces |  | Boolean | false |
-| toUpperCase |  |Boolean  | false |
-| toLowerCase |  | Boolean | false |
-| capitalize |  | Boolean | false |
-| capitalizeWords |  | Boolean | false |
-| truncateSize |  | Number | null |
-| truncateSuffix |  | String | "&nbsp;..." |
-| truncateWords |  | Boolean | false |
+| trim | Strip blank characters from the beginning and end of the text. | Boolean | false |
+| clearExtraSpaces | Same as _trim_, additionaly converting one or more consecutive blank characters into one space. | Boolean | false |
+| upperCase | Make the text uppercase. | Boolean  | false |
+| lowerCase | Make the text lowercase. | Boolean | false |
+| capitalize | Uppercase the first letter of the text. | Boolean | false |
+| capitalizeWords | Uppercase the first letter of each word in the text. | Boolean | false |
+| truncateSize | Defines a maximum size for the text by eliminating the exceeding part and adding a suffix to it (defined in _truncateSuffix_&nbsp;), if necessary. | Number | null |
+| truncateSuffix | Defines a suffix to be added to the end of the truncated text. | String | "&nbsp;..." |
+| truncateWords | Defines if it's allowed to cut the last word of the truncated text in the middle, in order to reach the size specified in _truncateSize_, or if it should end only with entire words, taking the previous one if the last has been cut. | Boolean | false |
 | prefix | Appends a value at the beggining of the formatted number. | String | "&nbsp;" <br>_(empty string)_ |
 | suffix | Appends a value at the end of the formatted number. | String |  "&nbsp;" <br>_(empty string)_ |
 
-### format.prototype ( )
+### format.prototype (&nbsp;)
 
 It will register a _format_ function for the objects of each respective Javascript type (_Number_, _Date_ and _String_), making it possible to write a cleaner and more readable code.
 
-However, keep in mind that using non-native prototype functions is not a recommended pratice, since the code can go into unexpected behavior in the future if the standards change. But it might not be an issue to mantain small projects though.
+However, keep in mind that using non-native prototyped functions is not a recommended pratice, since the code can go into unexpected behavior in the future if the standards change. But it might not be an issue to mantain small projects though.
