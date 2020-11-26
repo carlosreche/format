@@ -34,7 +34,7 @@ console.log(format.date(new Date('2020-09-05 16:15:00'), {
 let messedUpText = '   the QUICK browN fox jumps     OVER the lazy dog';
 console.log(format.text(messedUpText, {
     clearExtraSpaces: true,
-    toLowerCase:      true,
+    lowerCase:        true,
     capitalizeWords:  true,
     truncateSize:     35,
     truncateSuffix:   ' ...'
