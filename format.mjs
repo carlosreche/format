@@ -34,8 +34,6 @@ export const format = (() => {
 
   format.setup = (() => {
 
-    const setup = {};
-
     const defaults = {
       number: {
         integerDigits:             null,
@@ -68,28 +66,26 @@ export const format = (() => {
       }
     };
 
-    setup.defaultNumber = function defaultNumber(options = null) {
-      if (options) {
-        Object.assign(defaults.number, options);
+    return {
+      defaultNumber: function defaultNumber(options = null) {
+        if (options) {
+          Object.assign(defaults.number, options);
+        }
+        return {... defaults.number};
+      },
+      defaultDate: function defaultDate(options = null) {
+        if (options) {
+          Object.assign(defaults.date, options);
+        }
+        return {... defaults.date};
+      },
+      defaultText: function defaultText(options = null) {
+        if (options) {
+          Object.assign(defaults.text, options);
+        }
+        return {... defaults.text};
       }
-      return {... defaults.number};
     };
-
-    setup.defaultDate = function defaultDate(options = null) {
-      if (options) {
-        Object.assign(defaults.date, options);
-      }
-      return {... defaults.date};
-    };
-
-    setup.defaultText = function defaultText(options = null) {
-      if (options) {
-        Object.assign(defaults.text, options);
-      }
-      return {... defaults.text};
-    };
-
-    return setup;
   })();
 
   format.number = function formatNumber(number, options = {}) {
