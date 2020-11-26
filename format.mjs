@@ -260,8 +260,8 @@ export const format = (() => {
     let {
       trim             = false,
       clearExtraSpaces = false,
-      toUpperCase      = false,
-      toLowerCase      = false,
+      upperCase        = false,
+      lowerCase        = false,
       capitalize       = false,
       capitalizeWords  = false,
       truncateSize     = null,
@@ -277,11 +277,11 @@ export const format = (() => {
       text = text.trim();
     }
 
-    if (toUpperCase) {
+    if (upperCase) {
       text = text.toUpperCase();
-      // overrides "toLowerCase", "capitalize" and "capitalizeWords"
+      // overrides "lowerCase", "capitalize" and "capitalizeWords"
     } else {
-      if (toLowerCase) {
+      if (lowerCase) {
         text = text.toLowerCase();
       }
       if (capitalizeWords) {
