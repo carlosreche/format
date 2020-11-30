@@ -1,6 +1,6 @@
 # format
 
-A simple, nifty and full-featured Javascript formatter of numbers, dates and text strings.
+A simple, nifty and full-featured Javascript tool to format the presentation of numbers, dates and text strings.
 
 ## Quick View
 
