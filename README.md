@@ -33,11 +33,11 @@ console.log(format.date(new Date('2020-09-05 16:15:00'), {
 ```js
 let messedUpText = '   the QUICK browN fox jumps     OVER the lazy dog';
 console.log(format.text(messedUpText, {
-    clearExtraSpaces: true,
-    lowerCase:        true,
-    capitalizeWords:  true,
-    truncateSize:     35,
-    truncateSuffix:   ' ...'
+    trim:            true,
+    lowerCase:       true,
+    capitalizeWords: true,
+    cutSize:         35,
+    cutSuffix:       ' ...'
   }
 ));
 // output: "The Quick Brown Fox Jumps Over ..."
@@ -125,17 +125,51 @@ Should be an object having any of the properties below:
 
 | Property | Description | Expected Type | Default Value |
 |----------|--------------|:-------------:|:-------------:|
-| trim | Strip blank characters from the beginning and end of the text. | Boolean | false |
-| clearExtraSpaces | Same as _trim_, additionaly converting one or more consecutive blank characters into one space. | Boolean | false |
+| trim | Removes all blank characters from the beginning and at the end of the text, and converts one or more consecutive blank characters into one single space. | Boolean | false |
+| edgeTrim | Removes all blank characters from the beginning and at the end of the text. | Boolean | false |
+| innerTrim | Converts one or more consecutive blank characters into one single space. | Boolean | false |
 | upperCase | Make the text uppercase. | Boolean  | false |
 | lowerCase | Make the text lowercase. | Boolean | false |
 | capitalize | Uppercase the first letter of the text. | Boolean | false |
 | capitalizeWords | Uppercase the first letter of each word in the text. | Boolean | false |
-| truncateSize | Defines a maximum size for the text by eliminating the exceeding part and adding a suffix to it (defined in _truncateSuffix_&nbsp;), if necessary. | Number | null |
-| truncateSuffix | Defines a suffix to be added to the end of the truncated text. | String | "&nbsp;..." |
-| truncateWords | Defines if it's allowed to cut the last word of the truncated text in the middle, in order to reach the size specified in _truncateSize_, or if it should end only with entire words, taking the previous one if the last has been cut. | Boolean | false |
 | prefix | Appends a value at the beggining of the formatted number. | String | "&nbsp;" <br>_(empty string)_ |
+| cutSize | Defines a maximum size for the text by eliminating the exceeding part and adding a suffix to it (defined in _cutSuffix_&nbsp;), if necessary. | Number | null |
+| cutSuffix | Defines a suffix to be added to the end of the cut text. | String | "&nbsp;..." |
+| cutWords | Defines if it's allowed to cut the middle of the last word from a cut text, in order to reach the size specified in _cutSize_, or if it should end only with entire words, taking the previous one if the last has been cut. | Boolean | false |
 | suffix | Appends a value at the end of the formatted number. | String |  "&nbsp;" <br>_(empty string)_ |
+
+
+### format.number.defaultOptions&nbsp;_(&nbsp;options&nbsp;)_
+
+#### **_options_** : Object
+Defines default options for formatting numbers.
+
+### format.date.defaultOptions&nbsp;_(&nbsp;options&nbsp;)_
+
+#### **_options_** : Object
+Defines default options for formatting dates.
+
+### format.text.defaultOptions&nbsp;_(&nbsp;options&nbsp;)_
+
+#### **_options_** : Object
+Defines default options for formatting texts.
+
+
+### format.text.returnObjectOnCut&nbsp;_(&nbsp;returnObject&nbsp;)_
+
+Defines if a formatted text with the property _**cutSize**_ set should return a String object (default) or a simple string.
+
+If it's a String object, it will have a _**cutting**_ property with some useful informations to implement a expand/collapse text, like the object below:
+
+```js
+{
+  isCut: true,
+  kept: 'The quick brown fox jumps over',
+  cut: ' the lazy dog',
+  suffix: ' ...'
+}
+// string value = 'The quick brown fox jumps over ...'
+```
 
 ### format.prototype (&nbsp;)
 
