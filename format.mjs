@@ -24,15 +24,7 @@
  */
 export const format = (() => {
 
-  const format = (value, options = {}) => {
-    if (value instanceof Date) {
-      return format.date(value, options);
-    } else {
-      return format.number(value, options);
-    }
-  };
-
-  const defaults = {
+  const defaultOptions = {
     number: {
       integerDigits:             null,
       thousandsSeparator:        '',
@@ -50,66 +42,44 @@ export const format = (() => {
       suffix:  ''
     },
     text: {
-      trim:             false,
-      clearExtraSpaces: false,
-      upperCase:        false,
-      lowerCase:        false,
-      capitalize:       false,
-      capitalizeWords:  false,
-      truncateSize:     null,
-      truncateSuffix:   ' ...',
-      truncateWords:    false,
-      prefix:           '',
-      suffix:           ''
+      trim:            false,
+      edgeTrim:        false,
+      upperCase:       false,
+      lowerCase:       false,
+      capitalize:      false,
+      capitalizeWords: false,
+      cutSize:         null,
+      cutSuffix:       ' ...',
+      cutWords:        false,
+      prefix:          '',
+      suffix:          ''
+    }
+  };
+
+  const format = (value, options = {}) => {
+    if (value instanceof Date) {
+      return format.date(value, options);
+    } else {
+      return format.number(value, options);
     }
   };
 
   format.number = function formatNumber(number, options = {}) {
-    const parse = (number) => {
-      let parsed = (/^([+-\s]*)(\d*)(\.(\d*))?/).exec(number);
-      if (!parsed) {
-        return null;
-      }
-      if (!parsed[2]) {
-        if (!parsed[4]) {
-          return null;
-        }
-        parsed[2] = '0';
-      } else if (!parsed[4]) {
-        parsed[4] = '';
-      }
-      let positive;
-      switch (parsed[1]) {
-        case '':  positive = true; break;
-        case '-': positive = false; break;
-        case '+': positive = true; break;
-        default:
-          const minus = parsed[1].match(/-/g);
-          positive = !minus || ((minus.length % 2) == 0);
-          break;
-      }
-      return {
-        integer: parsed[2],
-        decimal: parsed[4],
-        positive: positive
-      };
-    }
-    
-    let parsed = parse(number);
+    let parsed = parseNumber(number);
     if (!parsed) {
       return Number.NaN;
     }
     let {integer, decimal, positive} = parsed;
     let {
-      integerDigits             = null,
-      thousandsSeparator        = '',
-      decimalSeparator          = '.',
-      decimalDigits             = null,
-      decimalThousandsSeparator = '',
-      round                     = false,
-      prefix                    = '',
-      suffix                    = ''
-    } = {...defaults.number, ...options};
+      integerDigits,
+      thousandsSeparator,
+      decimalSeparator,
+      decimalDigits,
+      decimalThousandsSeparator,
+      round,
+      prefix,
+      suffix
+    } = {...defaultOptions.number, ...options};
 
     if (round) {
       if ((typeof decimalDigits !== 'number') || (decimalDigits < 0)) {
@@ -120,7 +90,7 @@ export const format = (() => {
       number   = parseFloat((positive ? '' : '-') + integer + '.' + decimal);
       const k  = Math.pow(10, decimalDigits);
       number   = Math.round(number * k) / k;
-      parsed   = parse(number);
+      parsed   = parseNumber(number);
       integer  = parsed.integer;
       decimal  = parsed.decimal;
       positive = (number === 0) ? true : parsed.positive; // avoid result "-0"
@@ -165,11 +135,11 @@ export const format = (() => {
       }
     }
     let {
-      pattern = null,
-      fields   = {},
-      prefix  = '',
-      suffix  = ''
-    } = {...defaults.date, ...options};
+      pattern,
+      fields,
+      prefix,
+      suffix
+    } = {...defaultOptions.date, ...options};
     if (!pattern) {
       if (typeof options !== 'string') {
         return null;
@@ -180,10 +150,6 @@ export const format = (() => {
       fields = {};
     }
 
-    const leadingZeros = (totalDigits, number) => {
-      let zeros = totalDigits - String(number).length;
-      return ((zeros < 0) ? number : (('0').repeat(zeros) + number));
-    }
     const regexp = /\\.|yy(yy)?|mm?|dd?|hh?|ii?|ss?|v|z|\{[^\}]+\}/g;
     const callback = (match) => {
       switch (match[0]) {
@@ -230,25 +196,24 @@ export const format = (() => {
       text = String(text);
     }
     let {
-      trim             = false,
-      clearExtraSpaces = false,
-      upperCase        = false,
-      lowerCase        = false,
-      capitalize       = false,
-      capitalizeWords  = false,
-      truncateSize     = null,
-      truncateSuffix   = ' ...',
-      truncateWords    = false,
-      prefix           = '',
-      suffix           = ''
-    } = {...defaults.text, ...options};
+      trim,
+      edgeTrim,
+      upperCase,
+      lowerCase,
+      capitalize,
+      capitalizeWords,
+      cutSize,
+      cutSuffix,
+      cutWords,
+      prefix,
+      suffix
+    } = {...defaultOptions.text, ...options};
 
-    if (clearExtraSpaces) {
+    if (trim) {
       text = text.trim().replace(/\s+/g, ' ');
-    } else if (trim) {
+    } else if (edgeTrim) {
       text = text.trim();
     }
-
     if (upperCase) {
       text = text.toUpperCase();
       // overrides "lowerCase", "capitalize" and "capitalizeWords"
@@ -262,62 +227,126 @@ export const format = (() => {
         text = text.replace(/(^\s*)(\S)/, (all, space, letter) => (space + letter.toUpperCase()));
       }
     }
+    text = prefix + text + suffix;
+    if (typeof cutSize !== 'number') {
+      return text;
+    }
 
-    if ((typeof truncateSize === 'number') && (truncateSize > 0)) {
-      let textLength = text.length;
-      if (textLength > truncateSize) {
-        let suffixLength = truncateSuffix.length;
-        let newTextLength = truncateSize - suffixLength;
-        if (newTextLength < 1) {
-          newTextLength = 1;
-        }
-        if (truncateWords) {
-          text = text.substr(0, newTextLength) + truncateSuffix;
+    let textLength = text.length;
+    if (textLength <= cutSize) {
+      return textReturnOnCut(false, text, '', '');
+    }
+
+    if (typeof cutSuffix !== 'string') {
+      cutSuffix = '';
+    }
+    cutSize -= cutSuffix.length;
+    if (cutSize < 1) {
+      cutSize = 1;
+    }
+    let textKept, textCut;
+    if (cutWords) {
+      textKept = text.substr(0, cutSize);
+      textCut  = text.substr(cutSize);
+    } else {
+      const nonWords = '\\s.,:;?!(){}\\[\\]';
+      let regexp = '^(.{0,' + (cutSize - 1) + '}[^' + nonWords + '])' +
+                    '(?=[' + nonWords + ']|$)(.*)$';
+      let match = text.match(new RegExp(regexp));
+      if (match) {
+        textKept = match[1];
+        textCut  = match[2];
+      } else {
+        // attempts to match only the first word
+        regexp = '^(.*?[^' + nonWords + '])' + '(?=[' + nonWords + ']|$)(.*)$';
+        match = text.match(new RegExp(regexp));
+        if (match) {
+          textKept = match[1];
+          textCut  = match[2];
         } else {
-          const regexp = '^(.{0,' + (newTextLength - 1) + '}[^\\s.,:;?!])(?=[\\s.,:;?!]|$)';
-          const match  = text.match(new RegExp(regexp));
-          if (match) {
-            text = match[1] + truncateSuffix;
-          } else {
-            text = text.substr(0, newTextLength) + truncateSuffix;
-          }
+          textKept = text.substr(0, cutSize);
+          textCut  = text.substr(cutSize);
         }
       }
     }
-    return (prefix + text + suffix);
+    return textReturnOnCut(true, textKept, textCut, cutSuffix);
   };
-  format.text.adjustName = function adjustName(name, lowerCases = []) {
-    if (typeof name !== 'string') {
-      name = String(name);  
+
+
+  // formatting helpers
+  const parseNumber = (number) => {
+    let parsed = (/^([+-\s]*)(\d*)(\.(\d*))?/).exec(number);
+    if (!parsed) {
+      return null;
     }
-    name = name.trim().replace(/\s+/g, ' ').toLowerCase();
-    const pattern = '(^|[ ´`\'])' +
-                      ((Array.isArray(lowerCases) && (lowerCases.length > 0)) ?
-                        ('(?!(?:' + lowerCases.join('|') + ')(?: |$))') : '') +
-                    '(\\S)';
-    const callback = (all, border, letter) => (border + letter.toUpperCase());
-    return name.replace(new RegExp(pattern, 'g'), callback);
+    if (!parsed[2]) {
+      if (!parsed[4]) {
+        return null;
+      }
+      parsed[2] = '0';
+    } else if (!parsed[4]) {
+      parsed[4] = '';
+    }
+    let positive;
+    switch (parsed[1]) {
+      case '':  positive = true; break;
+      case '-': positive = false; break;
+      case '+': positive = true; break;
+      default:
+        const minus = parsed[1].match(/-/g);
+        positive = !minus || ((minus.length % 2) == 0);
+        break;
+    }
+    return {
+      integer: parsed[2],
+      decimal: parsed[4],
+      positive: positive
+    };
   };
+  const leadingZeros = (totalDigits, number) => {
+    let zeros = totalDigits - String(number).length;
+    return ((zeros < 0) ? number : (('0').repeat(zeros) + number));
+  }
+  class CutText extends String {
+    cutting;
+    constructor(isCut, kept, cut, suffix) {
+      super(kept + suffix);
+      this.cutting = {isCut, kept, cut, suffix};
+    }
+  }
 
-
+  // formatting setup
   format.number.defaultOptions = function defaultNumberOptions(options = null) {
     if (options) {
-      Object.assign(defaults.number, options);
+      Object.assign(defaultOptions.number, options);
     }
-    return {...defaults.number};
+    return {...defaultOptions.number};
   };
   format.date.defaultOptions = function defaultDateOptions(options = null) {
     if (options) {
-      Object.assign(defaults.date, options);
+      Object.assign(defaultOptions.date, options);
     }
-    return {...defaults.date};
+    return {...defaultOptions.date};
   };
   format.text.defaultOptions = function defaultTextOptions(options = null) {
     if (options) {
-      Object.assign(defaults.text, options);
+      Object.assign(defaultOptions.text, options);
     }
-    return {...defaults.text};
+    return {...defaultOptions.text};
   };
+  let textReturnOnCut;
+  format.text.returnObjectOnCut = (returnObject = null) => {
+    if (returnObject !== null) {
+      if (returnObject) {
+        textReturnOnCut = (isCut, kept, cut, suffix) => new CutText(isCut, kept, cut, suffix);
+      } else {
+        textReturnOnCut = (isCut, kept, cut, suffix) => (kept + suffix);
+      }
+    }
+    return textReturnOnCut;
+  };
+  format.text.returnObjectOnCut(true);
+
 
   /* It will register a format function for the objects of each respective
    * Javascript type (Number, Date and String), making it possible to
