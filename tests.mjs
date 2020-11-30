@@ -8,6 +8,7 @@ console.log(format.number(1000.5, {
     thousandsSeparator: '.'
   }
 ));
+// output: "1.000,50"
 
 
 console.log(format.date(new Date('2020-09-05 16:15:00'), {
@@ -18,14 +19,35 @@ console.log(format.date(new Date('2020-09-05 16:15:00'), {
     }
   }
 ));
+// output: "Sep 05, 2020"
 
 
 let messedUpText = '   the QUICK browN fox jumps     OVER the lazy dog';
-console.log(format.text(messedUpText, {
-    clearExtraSpaces: true,
-    lowerCase:        true,
-    capitalizeWords:  true,
-    truncateSize:     35,
-    truncateSuffix:   ' ...'
-  }
-));
+let fixedText = format.text(messedUpText, {
+  trim:       true,
+  lowerCase:  true,
+  capitalize: true
+});
+console.log(fixedText);
+// output: "The quick brown fox jumps over the lazy dog"
+
+
+let cut = format.text(fixedText, {
+    capitalizeWords: true,
+    cutSize:         35,
+    cutSuffix:       ' ...',
+    cutWords:        false
+});
+console.log(cut);
+console.log(`length = ${cut.length}`);
+/* output:
+    [String (CutText): 'The Quick Brown Fox Jumps Over ...'] {
+      cutting: {
+        isCut: true,
+        kept: 'The Quick Brown Fox Jumps Over',
+        cut: ' The Lazy Dog',
+        suffix: ' ...'
+      }
+    }
+    length = 34
+*/
