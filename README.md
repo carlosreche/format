@@ -1,47 +1,56 @@
 # format
 
-A simple, nifty and full-featured Javascript tool to format the presentation of numbers, dates and text strings.
+A simple, nifty and full-featured Javascript tool to format the exhibition of numbers, dates and text strings.
 
 ## Quick View
 
 ### Formatting Numbers
 
 ```js
-console.log(format.number(1000.5, {
-    decimalDigits:      2,
-    decimalSeparator:   ',',
-    thousandsSeparator: '.'
-  }
-));
+let options = {
+  decimalDigits:      2,
+  decimalSeparator:   ',',
+  thousandsSeparator: '.'
+};
+
+console.log(format(1000.5, options));
 // output: "1.000,50"
+
+// in this case, the function 'format' is a shortcut to 'format.number'
 ```
 
 ### Formatting Dates
 ```js
-console.log(format.date(new Date('2020-09-05 16:15:00'), {
-    pattern: '{abbrMonth} dd, yyyy',
-    fields: {
-      abbrMonth: date => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul',
-                          'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][date.getMonth()]
-    }
+let birthday = new Date('2020-09-05 16:15:00');
+let options = {
+  pattern: '{abbrMonth} dd, yyyy',
+  fields: {
+    abbrMonth: date => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul',
+                        'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][date.getMonth()]
   }
-));
+};
+
+console.log(format(birthday, options));
 // output: "Sep 05, 2020"
+
+// in this case, the function 'format' is a shortcut to 'format.date'
 ```
 
 ### Formatting Texts
 ```js
-let messedUpText = '   the QUICK browN fox jumps     OVER the lazy dog';
-console.log(format.text(messedUpText, {
-    trim:            true,
-    lowerCase:       true,
-    capitalizeWords: true,
-    cutSize:         35,
-    cutSuffix:       ' ...'
-  }
-));
+let messedUpText = " the QUICK browN fox jumps     OVER the lazy dog  ";
+let options = {
+  trim:            true,
+  lowerCase:       true,
+  capitalizeWords: true,
+  cutSize:         35,
+  cutSuffix:       ' ...',
+  cutWords:        false
+};
+
+console.log(format.text(messedUpText, options));
 // output: "The Quick Brown Fox Jumps Over ..."
-// (final length = 34)
+// (output length = 34)
 ```
 
 ---
@@ -107,7 +116,7 @@ The following specifiers can be used in the _pattern_ property:
 | z | Timezone offset | +03:00 |
 | {&nbsp;_customField_&nbsp;} |  |  |
 
-The specifiers in the _pattern_ can be escaped using a backslash "\\" character. Just remember to escape the backslash with another backslash first. Example:
+The specifiers in the _pattern_ can be escaped using a backslash "\\" character. Just remember to escape the backslash itself with another backslash first. Example:
 
 ```js
 format.date('\\mont\\h: mm'); // results "month: 09" (for a date in September)
