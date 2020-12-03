@@ -16,8 +16,9 @@
  */
 
 /**
+ * format
  * 
- * 
+ * A tool to format the exhibition of numbers, dates and text strings.
  * 
  * @url https://github.com/carlosreche/format
  * @author Carlos Henrique Reche
@@ -56,15 +57,15 @@ export const format = (() => {
     }
   };
 
-  const format = (value, options = {}) => {
+  const thisObject = function formatValue(value, options = {}) {
     if (value instanceof Date) {
-      return format.date(value, options);
+      return thisObject.date(value, options);
     } else {
-      return format.number(value, options);
+      return thisObject.number(value, options);
     }
   };
 
-  format.number = function formatNumber(number, options = {}) {
+  thisObject.number = function formatNumber(number, options = {}) {
     let parsed = parseNumber(number);
     if (!parsed) {
       return Number.NaN;
@@ -121,7 +122,7 @@ export const format = (() => {
     );
   };
 
-  format.date = function formatDate(date, options = {}) {
+  thisObject.date = function formatDate(date, options = {}) {
     if (!(date instanceof Date)) {
       switch (typeof date) {
         case 'number':
@@ -156,9 +157,9 @@ export const format = (() => {
         case '\\':
           return match[1];
         case '{':
-          let fieldName = match.substr(1, match.length - 2);
-          let callback  = fields[fieldName];
-          return ((typeof callback === 'function') ? callback(date) : '');
+          let fieldName     = match.substr(1, match.length - 2);
+          let fieldCallback = fields[fieldName];
+          return ((typeof fieldCallback === 'function') ? fieldCallback(date) : '');
         default:
           break;
       }
@@ -191,7 +192,7 @@ export const format = (() => {
     return (prefix + pattern.replace(regexp, callback) + suffix);
   };
 
-  format.text = function formatText(text, options = {}) {
+  thisObject.text = function formatText(text, options = {}) {
     if (typeof text !== 'string') {
       text = String(text);
     }
@@ -272,7 +273,6 @@ export const format = (() => {
     return textReturnOnCut(true, textKept, textCut, cutSuffix);
   };
 
-
   // formatting helpers
   const parseNumber = (number) => {
     let parsed = (/^([+-\s]*)(\d*)(\.(\d*))?/).exec(number);
@@ -304,9 +304,10 @@ export const format = (() => {
     };
   };
   const leadingZeros = (totalDigits, number) => {
-    let zeros = totalDigits - String(number).length;
-    return ((zeros < 0) ? number : (('0').repeat(zeros) + number));
-  }
+    number = String(number);
+    let zeros = totalDigits - number.length;
+    return ((zeros < 1) ? number : (('0').repeat(zeros) + number));
+  };
   class CutText extends String {
     cutting;
     constructor(isCut, kept, cut, suffix) {
@@ -316,26 +317,26 @@ export const format = (() => {
   }
 
   // formatting setup
-  format.number.defaultOptions = function defaultNumberOptions(options = null) {
+  thisObject.number.defaultOptions = function defaultNumberOptions(options = null) {
     if (options) {
       Object.assign(defaultOptions.number, options);
     }
     return {...defaultOptions.number};
   };
-  format.date.defaultOptions = function defaultDateOptions(options = null) {
+  thisObject.date.defaultOptions = function defaultDateOptions(options = null) {
     if (options) {
       Object.assign(defaultOptions.date, options);
     }
     return {...defaultOptions.date};
   };
-  format.text.defaultOptions = function defaultTextOptions(options = null) {
+  thisObject.text.defaultOptions = function defaultTextOptions(options = null) {
     if (options) {
       Object.assign(defaultOptions.text, options);
     }
     return {...defaultOptions.text};
   };
   let textReturnOnCut;
-  format.text.returnObjectOnCut = (returnObject = null) => {
+  thisObject.text.returnObjectOnCut = (returnObject = null) => {
     if (returnObject !== null) {
       if (returnObject) {
         textReturnOnCut = (isCut, kept, cut, suffix) => new CutText(isCut, kept, cut, suffix);
@@ -345,8 +346,7 @@ export const format = (() => {
     }
     return textReturnOnCut;
   };
-  format.text.returnObjectOnCut(true);
-
+  thisObject.text.returnObjectOnCut(true);
 
   /* It will register a format function for the objects of each respective
    * Javascript type (Number, Date and String), making it possible to
@@ -357,29 +357,29 @@ export const format = (() => {
    * in the future if the standards change. But it might not be an issue to 
    * mantain small projects though.
    */
-  format.prototype = function prototype() {
+  thisObject.prototype = function prototype() {
     Number.prototype.format = function(options = null) {
-      return format.number(this, options);
+      return thisObject.number(this, options);
     };
     Date.prototype.format = function(options = null) {
-      return format.date(this, options);
+      return thisObject.date(this, options);
     };
     String.prototype.format = function(options = null) {
-      return format.text(this, options);
+      return thisObject.text(this, options);
     };
 
     Number.defaultFormatOptions = function(options = null) {
-      format.number.defaultOptions(options);
+      thisObject.number.defaultOptions(options);
     };
     Date.defaultFormatOptions = function(options = null) {
-      format.date.defaultOptions(options);
+      thisObject.date.defaultOptions(options);
     };
     String.defaultFormatOptions = function(options = null) {
-      format.text.defaultOptions(options);
+      thisObject.text.defaultOptions(options);
     };
   };
 
-  return format;
+  return thisObject;
 })();
 
 export default format;
