@@ -57,7 +57,7 @@ export const format = (() => {
     }
   };
 
-  const thisObject = function formatValue(value, options = {}) {
+  const thisObject = function formatValue (value, options = {}) {
     if (value instanceof Date) {
       return thisObject.date(value, options);
     } else {
@@ -65,7 +65,7 @@ export const format = (() => {
     }
   };
 
-  thisObject.number = function formatNumber(number, options = {}) {
+  thisObject.number = function formatNumber (number, options = {}) {
     let parsed = parseNumber(number);
     if (!parsed) {
       return Number.NaN;
@@ -96,33 +96,33 @@ export const format = (() => {
       decimal  = parsed.decimal;
       positive = (number === 0) ? true : parsed.positive; // avoid result "-0"
     }
-    let intLength = integer.length, decLength = decimal.length;
+    let intLength = integer.length;
+    let decLength = decimal.length;
     if ((typeof integerDigits === 'number') && (integerDigits > intLength)) {
       integer = ('0').repeat(integerDigits - intLength) + integer;
     }
-    if ((typeof thousandsSeparator === 'string') && (thousandsSeparator !== '')) {
+    if ((typeof thousandsSeparator === 'string') &&
+          (thousandsSeparator !== '')) {
       integer = integer.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
     }
     if (typeof decimalDigits === 'number') {
       if (decimalDigits > decLength) {
         decimal += ('0').repeat(decimalDigits - decLength);
       } else if (decimalDigits < decLength) {
-        decimal = (decimalDigits > 0) ? decimal.substr(0, decimalDigits) : '';
+        decimal = (decimalDigits > 0) ?
+                    decimal.substring(0, decimalDigits) : '';
       }
     }
     if ((typeof decimalThousandsSeparator === 'string') &&
-          (decimalThousandsSeparator !== '')
-    ) {
-      decimal = decimal.replace(/(?<=(?<!\d)(\d{3})+)\B/g, decimalThousandsSeparator);
+          (decimalThousandsSeparator !== '')) {
+      decimal =
+        decimal.replace(/(?<=(?<!\d)(\d{3})+)\B/g, decimalThousandsSeparator);
     }
-
-    return (
-      prefix + (positive ? '' : '-') + integer + 
-      ((decimal == '') ? '' : (decimalSeparator + decimal)) + suffix
-    );
+    return (prefix + (positive ? '' : '-') + integer +
+            ((decimal == '') ? '' : (decimalSeparator + decimal)) + suffix);
   };
 
-  thisObject.date = function formatDate(date, options = {}) {
+  thisObject.date = function formatDate (date, options = {}) {
     if (!(date instanceof Date)) {
       switch (typeof date) {
         case 'number':
@@ -150,22 +150,20 @@ export const format = (() => {
     if (!fields) {
       fields = {};
     }
-
     const regexp = /\\.|yy(yy)?|mm?|dd?|hh?|ii?|ss?|v|z|\{[^\}]+\}/g;
     const callback = (match) => {
       switch (match[0]) {
         case '\\':
           return match[1];
         case '{':
-          let fieldName     = match.substr(1, match.length - 2);
+          let fieldName     = match.substring(1, match.length - 1);
           let fieldCallback = fields[fieldName];
-          return ((typeof fieldCallback === 'function') ? fieldCallback(date) : '');
-        default:
-          break;
+          return ((typeof fieldCallback === 'function') ?
+                  fieldCallback(date) : '');
       }
       switch (match) {
         case 'yyyy': return date.getFullYear();
-        case 'yy':   return String(date.getFullYear()).substr(-2);
+        case 'yy':   return String(date.getFullYear()).slice(-2);
         case 'mm':   return leadingZeros(2, (date.getMonth() + 1));
         case 'm':    return (date.getMonth() + 1);
         case 'dd':   return leadingZeros(2, date.getDate());
@@ -184,15 +182,12 @@ export const format = (() => {
           let minutes  = parseInt((absValue - hours) * 60);
           return `${(value < 0) ? '-' : '+'}${leadingZeros(2, hours)}:${
                   leadingZeros(2, minutes)}`;
-
-        default:
-          break;
       }
     };
     return (prefix + pattern.replace(regexp, callback) + suffix);
   };
 
-  thisObject.text = function formatText(text, options = {}) {
+  thisObject.text = function formatText (text, options = {}) {
     if (typeof text !== 'string') {
       text = String(text);
     }
@@ -223,9 +218,13 @@ export const format = (() => {
         text = text.toLowerCase();
       }
       if (capitalizeWords) {
-        text = text.replace(/(^|\s)(\S)/g, (all, border, letter) => (border + letter.toUpperCase()));
+        text = text.replace(
+                  /(^|\s)(\S)/g,
+                  (all, border, letter) => (border + letter.toUpperCase()));
       } else if (capitalize) {
-        text = text.replace(/(^\s*)(\S)/, (all, space, letter) => (space + letter.toUpperCase()));
+        text = text.replace(
+                  /(^\s*)(\S)/,
+                  (all, space, letter) => (space + letter.toUpperCase()));
       }
     }
     text = prefix + text + suffix;
@@ -247,8 +246,8 @@ export const format = (() => {
     }
     let textKept, textCut;
     if (cutWords) {
-      textKept = text.substr(0, cutSize);
-      textCut  = text.substr(cutSize);
+      textKept = text.substring(0, cutSize);
+      textCut  = text.substring(cutSize);
     } else {
       const nonWords = '\\s.,:;?!(){}\\[\\]';
       let regexp = '^(.{0,' + (cutSize - 1) + '}[^' + nonWords + '])' +
@@ -265,8 +264,8 @@ export const format = (() => {
           textKept = match[1];
           textCut  = match[2];
         } else {
-          textKept = text.substr(0, cutSize);
-          textCut  = text.substr(cutSize);
+          textKept = text.substring(0, cutSize);
+          textCut  = text.substring(cutSize);
         }
       }
     }
@@ -289,9 +288,15 @@ export const format = (() => {
     }
     let positive;
     switch (parsed[1]) {
-      case '':  positive = true; break;
-      case '-': positive = false; break;
-      case '+': positive = true; break;
+      case '':
+        positive = true;
+        break;
+      case '-':
+        positive = false;
+        break;
+      case '+':
+        positive = true;
+        break;
       default:
         const minus = parsed[1].match(/-/g);
         positive = !minus || ((minus.length % 2) == 0);
@@ -310,26 +315,29 @@ export const format = (() => {
   };
   class CutText extends String {
     cutting;
-    constructor(isCut, kept, cut, suffix) {
+    constructor (isCut, kept, cut, suffix) {
       super(kept + suffix);
       this.cutting = {isCut, kept, cut, suffix};
     }
   }
 
   // formatting setup
-  thisObject.number.defaultOptions = function defaultNumberOptions(options = null) {
+  thisObject.number.defaultOptions =
+        function defaultNumberOptions (options = null) {
     if (options) {
       Object.assign(defaultOptions.number, options);
     }
     return {...defaultOptions.number};
   };
-  thisObject.date.defaultOptions = function defaultDateOptions(options = null) {
+  thisObject.date.defaultOptions =
+        function defaultDateOptions (options = null) {
     if (options) {
       Object.assign(defaultOptions.date, options);
     }
     return {...defaultOptions.date};
   };
-  thisObject.text.defaultOptions = function defaultTextOptions(options = null) {
+  thisObject.text.defaultOptions =
+        function defaultTextOptions (options = null) {
     if (options) {
       Object.assign(defaultOptions.text, options);
     }
@@ -339,7 +347,8 @@ export const format = (() => {
   thisObject.text.returnObjectOnCut = (returnObject = null) => {
     if (returnObject !== null) {
       if (returnObject) {
-        textReturnOnCut = (isCut, kept, cut, suffix) => new CutText(isCut, kept, cut, suffix);
+        textReturnOnCut =
+          (isCut, kept, cut, suffix) => new CutText(isCut, kept, cut, suffix);
       } else {
         textReturnOnCut = (isCut, kept, cut, suffix) => (kept + suffix);
       }
@@ -357,7 +366,7 @@ export const format = (() => {
    * in the future if the standards change. But it might not be an issue to 
    * mantain small projects though.
    */
-  thisObject.prototype = function prototype() {
+  thisObject.registerPrototypes = function registerPrototypes() {
     Number.prototype.format = function(options = null) {
       return thisObject.number(this, options);
     };
@@ -367,8 +376,7 @@ export const format = (() => {
     String.prototype.format = function(options = null) {
       return thisObject.text(this, options);
     };
-
-    Number.defaultFormatOptions = function(options = null) {
+      Number.defaultFormatOptions = function(options = null) {
       thisObject.number.defaultOptions(options);
     };
     Date.defaultFormatOptions = function(options = null) {

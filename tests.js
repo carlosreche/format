@@ -1,5 +1,5 @@
-import format from './format.mjs';
 
+import format from './format.js';
 
 
 console.log(format.number(1000.5, {
